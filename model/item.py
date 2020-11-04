@@ -96,6 +96,11 @@ class ReviewStats(object):
     Class handling statistics
     """
 
+    _a_levels = [ReviewLevel.A1, ReviewLevel.A2, ReviewLevel.A3, ReviewLevel.A4]
+    _g_levels = [ReviewLevel.G1, ReviewLevel.G2]
+    _m_levels = [ReviewLevel.M1]
+    _e_levels = [ReviewLevel.E1]
+
     def __init__(self, items: List[ReviewItem]):
         self._items = items
 
@@ -129,3 +134,22 @@ class ReviewStats(object):
 
     def mean(self):
         return (self.mean_a() + self.mean_g() + self.mean_m() + self.mean_e()) / 4
+
+    @staticmethod
+    def optimal(levels: List[ReviewLevel]) -> int:
+        opt_a = 0
+        for level in levels:
+            opt_a += level.value
+        return opt_a
+
+    def corr_a(self):
+        return ReviewStats.optimal(ReviewStats._a_levels) / self.mean_a() / 24
+
+    def corr_g(self):
+        return ReviewStats.optimal(ReviewStats._g_levels) / self.mean_g() / 24
+
+    def corr_m(self):
+        return ReviewStats.optimal(ReviewStats._m_levels) / self.mean_m() / 24
+
+    def corr_e(self):
+        return ReviewStats.optimal(ReviewStats._e_levels) / self.mean_e() / 24
