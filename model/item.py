@@ -103,37 +103,53 @@ class ReviewStats(object):
 
     def __init__(self, items: List[ReviewItem]):
         self._items = items
+        self._mean_a = None
+        self._mean_g = None
+        self._mean_m = None
+        self._mean_e = None
 
+    @property
     def mean_a(self) -> float:
-        a_total_time = 0
-        for item in self._items:
-            a_total_time += item.get_stat(ReviewLevel.A1) * ReviewLevel.A1.value
-            a_total_time += item.get_stat(ReviewLevel.A2) * ReviewLevel.A2.value
-            a_total_time += item.get_stat(ReviewLevel.A3) * ReviewLevel.A3.value
-            a_total_time += item.get_stat(ReviewLevel.A4) * ReviewLevel.A4.value
-        return a_total_time / 24 / len(self._items)
+        if self._mean_a is None:
+            a_total_time = 0
+            for item in self._items:
+                a_total_time += item.get_stat(ReviewLevel.A1) * ReviewLevel.A1.value
+                a_total_time += item.get_stat(ReviewLevel.A2) * ReviewLevel.A2.value
+                a_total_time += item.get_stat(ReviewLevel.A3) * ReviewLevel.A3.value
+                a_total_time += item.get_stat(ReviewLevel.A4) * ReviewLevel.A4.value
+            self._mean_a = a_total_time / 24 / len(self._items)
+        return self._mean_a
 
-    def mean_g(self):
-        g_total_time = 0
-        for item in self._items:
-            g_total_time += item.get_stat(ReviewLevel.G1) * ReviewLevel.G1.value
-            g_total_time += item.get_stat(ReviewLevel.G2) * ReviewLevel.G2.value
-        return g_total_time / 24 / len(self._items)
+    @property
+    def mean_g(self) -> float:
+        if self._mean_g is None:
+            g_total_time = 0
+            for item in self._items:
+                g_total_time += item.get_stat(ReviewLevel.G1) * ReviewLevel.G1.value
+                g_total_time += item.get_stat(ReviewLevel.G2) * ReviewLevel.G2.value
+            self._mean_g = g_total_time / 24 / len(self._items)
+        return self._mean_g
 
-    def mean_m(self):
-        m_total_time = 0
-        for item in self._items:
-            m_total_time += item.get_stat(ReviewLevel.M1) * ReviewLevel.M1.value
-        return m_total_time / 24 / len(self._items)
+    @property
+    def mean_m(self) -> float:
+        if self._mean_m is None:
+            m_total_time = 0
+            for item in self._items:
+                m_total_time += item.get_stat(ReviewLevel.M1) * ReviewLevel.M1.value
+            self._mean_m = m_total_time / 24 / len(self._items)
+        return self._mean_m
 
-    def mean_e(self):
-        e_total_time = 0
-        for item in self._items:
-            e_total_time += item.get_stat(ReviewLevel.E1) * ReviewLevel.E1.value
-        return e_total_time / 24 / len(self._items)
+    @property
+    def mean_e(self) -> float:
+        if self._mean_e is None:
+            e_total_time = 0
+            for item in self._items:
+                e_total_time += item.get_stat(ReviewLevel.E1) * ReviewLevel.E1.value
+            self._mean_e = e_total_time / 24 / len(self._items)
+        return self._mean_e
 
     def mean(self):
-        return (self.mean_a() + self.mean_g() + self.mean_m() + self.mean_e()) / 4
+        return (self.mean_a + self.mean_g + self.mean_m + self.mean_e) / 4
 
     @staticmethod
     def optimal(levels: List[ReviewLevel]) -> int:
@@ -143,13 +159,13 @@ class ReviewStats(object):
         return opt_a
 
     def corr_a(self):
-        return ReviewStats.optimal(ReviewStats._a_levels) / self.mean_a() / 24
+        return ReviewStats.optimal(ReviewStats._a_levels) / self.mean_a / 24
 
     def corr_g(self):
-        return ReviewStats.optimal(ReviewStats._g_levels) / self.mean_g() / 24
+        return ReviewStats.optimal(ReviewStats._g_levels) / self.mean_g / 24
 
     def corr_m(self):
-        return ReviewStats.optimal(ReviewStats._m_levels) / self.mean_m() / 24
+        return ReviewStats.optimal(ReviewStats._m_levels) / self.mean_m / 24
 
     def corr_e(self):
-        return ReviewStats.optimal(ReviewStats._e_levels) / self.mean_e() / 24
+        return ReviewStats.optimal(ReviewStats._e_levels) / self.mean_e / 24
